@@ -1,9 +1,12 @@
+import java.util.ArrayList;
+
 public class Coffee {
     private String name;
     private double price;
     private int waterUsage;
     private int beansUsage;
     private int cupsUsage;
+    static ArrayList<Coffee> coffeeList = new ArrayList<Coffee>();
 
     public Coffee(String name, double price, int waterUsage, int beansUsage, int cupsUsage) {
         this.name = name;
@@ -11,6 +14,7 @@ public class Coffee {
         this.waterUsage = waterUsage;
         this.beansUsage = beansUsage;
         this.cupsUsage = cupsUsage;
+        coffeeList.add(this);
     }
     public String getName() {
         return name;

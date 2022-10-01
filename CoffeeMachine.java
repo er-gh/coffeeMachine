@@ -1,11 +1,15 @@
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class CoffeeMachine {
-    private int water = 4000;
-    private int beans = 1000;
-    private int cups = 100;
-    private final int maxWater = 4000;
-    private final int maxBeans = 1000;
-    private final int maxCups = 100;
-    private double bank = 0.0;
+    private static int water = 4000;
+    private static int beans = 1000;
+    private static int cups = 100;
+    private static final int maxWater = 4000;
+    private static final int maxBeans = 1000;
+    private static final int maxCups = 100;
+    private static double bank = 0.0;
 
     public int getWater() {
         return water;
@@ -43,7 +47,7 @@ public class CoffeeMachine {
             bank += coffee.getPrice() * amount;
             getBuyInfo(coffee, amount);
         } else {
-            buyCoffeeAlter(coffee, amount);
+            buyCoffeeAlt(coffee, amount);
         }
     }
     private byte checkCoffee(Coffee coffee, int amount) {
@@ -86,7 +90,7 @@ public class CoffeeMachine {
         System.out.println("Water - " + getWater());
         System.out.println("Beans - " + getBeans());
         System.out.println("Cups - " + getCups());
-        System.out.println("Bank - " + getBank());
+        System.out.println("Bank - " + String.format("%.2f", getBank()));
     }
     private void getBuyInfo(Coffee coffee, int amount) {
         System.out.println("You bought:");
@@ -111,9 +115,91 @@ public class CoffeeMachine {
         }
         return amount;
     }
-    private void buyCoffeeAlter(Coffee coffee, int amount) {
+    private void buyCoffeeAlt(Coffee coffee, int amount) {
         System.out.println("Available coffee:");
         System.out.println("\t-" + coffee.getName());
         System.out.println("\t-" + checkBuyAmount(coffee, amount) + " cups");
+    }
+    public void withdrawMoney() {
+        setBank(0);
+    }
+    public void refill() {
+        setBeans(maxBeans);
+        setWater(maxWater);
+        setCups(maxCups);
+    }
+    public void refill(int water, int beans, int cups) {
+        setBeans(beans);
+        setWater(water);
+        setCups(cups);
+    }
+    public void saveFile() {
+        try (FileWriter writer = new FileWriter("Info.txt", false)) {
+            String text = String.valueOf(water) + " " +
+                    String.valueOf(beans) + " " +
+                    String.valueOf(cups) + " " +
+                    String.valueOf(String.format("%.2f", getBank()));
+            writer.write(text);
+            writer.flush();
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+    public static void readFile() {
+        try (FileReader reader = new FileReader("Info.txt")) {
+            int c;
+            int j = 0;
+            String[] savedNums = {"", "", "", ""};
+            while ((c = reader.read()) != -1) {
+                if (c == 32) {
+                    j++;
+                    continue;
+                }
+                if ((char)c == ',')
+                    c = '.';
+                savedNums[j] += (char)c;
+
+            }
+            water = Integer.parseInt(savedNums[0]);
+            beans = Integer.parseInt(savedNums[1]);
+            cups = Integer.parseInt(savedNums[2]);
+            bank = Double.parseDouble(savedNums[3]);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+    public void startWork() throws IOException {
+        System.out.println("\t\tCoffee available:");
+        for (int i = 0; i < Coffee.coffeeList.size(); i++) {
+            System.out.println("-" + Coffee.coffeeList.get(i).getName() + "\t\t" + Coffee.coffeeList.get(i).getPrice() + "$");
+        }
+        System.out.println("Buy - 1, Refill - 2, Info - 3, Close - q");
+        while (true) {
+            switch (System.in.read()) {
+                case 'q':
+                    System.out.println("Exit");
+                    break;
+                case 1:
+                    System.out.println("-------------------------");
+                    for (int i = 0; i < Coffee.coffeeList.size(); i++) {
+                        System.out.println(i + " - " + Coffee.coffeeList.get(i).getName() + "\n");
+                    }
+                    int coffeeBuyRes = System.in.read();
+                    System.out.println("How many cups: ");
+                    int cupsAmount = System.in.read();
+                    buyCoffee(Coffee.coffeeList.get(coffeeBuyRes), cupsAmount);
+                    System.out.println("-------------------------");
+                    break;
+                case 2:
+                    refill();
+                    break;
+                case 3:
+                    getFullInfo();
+                    break;
+                default:
+                    break;
+            }
+
+        }
     }
 }
