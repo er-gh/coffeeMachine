@@ -1,3 +1,4 @@
+import java.io.Console;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -169,37 +170,40 @@ public class CoffeeMachine {
         }
     }
     public void startWork() throws IOException {
-        System.out.println("\t\tCoffee available:");
-        for (int i = 0; i < Coffee.coffeeList.size(); i++) {
-            System.out.println("-" + Coffee.coffeeList.get(i).getName() + "\t\t" + Coffee.coffeeList.get(i).getPrice() + "$");
-        }
-        System.out.println("Buy - 1, Refill - 2, Info - 3, Close - q");
-        while (true) {
+        boolean checkLoop = true;
+        while (checkLoop) {
+            System.out.println("\t\tCoffee available:");
+            for (int i = 0; i < Coffee.coffeeList.size(); i++) {
+                System.out.println("- " + String.format("%-15s %.2f$", Coffee.coffeeList.get(i).getName(), Coffee.coffeeList.get(i).getPrice()));
+            }
+            System.out.println("Buy - 1 | Refill - 2 | Info - 3 | Close - q");
             switch (System.in.read()) {
-                case 'q':
-                    System.out.println("Exit");
-                    break;
-                case 1:
+                case '1':
                     System.out.println("-------------------------");
                     for (int i = 0; i < Coffee.coffeeList.size(); i++) {
-                        System.out.println(i + " - " + Coffee.coffeeList.get(i).getName() + "\n");
+                        System.out.println(i + " - " + Coffee.coffeeList.get(i).getName());
                     }
+                    System.in.read();
                     int coffeeBuyRes = System.in.read();
-                    System.out.println("How many cups: ");
+                    System.out.print("How many cups: ");
+                    System.in.read();
                     int cupsAmount = System.in.read();
-                    buyCoffee(Coffee.coffeeList.get(coffeeBuyRes), cupsAmount);
+                    buyCoffee(Coffee.coffeeList.get(coffeeBuyRes - 48), cupsAmount - 48);
                     System.out.println("-------------------------");
                     break;
-                case 2:
+                case '2':
                     refill();
                     break;
-                case 3:
+                case '3':
                     getFullInfo();
+                    break;
+                case 'q':
+                    checkLoop = false;
                     break;
                 default:
                     break;
             }
-
         }
+        System.out.println("Exit");
     }
 }
